@@ -1,0 +1,28 @@
+{
+  "name": "@mvarble/viewport-planar-graph",
+  "version": "0.0.0",
+  "description": "A Cycle.js component for managing planar graphs and interfacing them with the viewport.js API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "viewport.js",
+    "cycle.js",
+    "xstream",
+    "canvas",
+    "rendering",
+    "graph"
+  ],
+  "author": "Matthew Varble",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mvarble/viewport-planar-graph/issues"
+  },
+  "homepage": "https://github.com/mvarble/viewport-planar-graph#readme",
+  "dependencies": {
+    "@mvarble/frames.js": "^1.0.7",
+    "@mvarble/viewport.js": "^1.2.0",
+    "xstream": "^11.11.0"
+  }
+}
