@@ -2,22 +2,22 @@
 
 A [Cycle.js](https://cycle.js.org/) component for managing planar graphs and interfacing them with the [viewport.js](https://github.com/mvarble/viewport.js) API.
 
-# Example
+## Example
 
 For Blender users, this UI may look familiar.
 The user is able to create and drag collections of nodes around in the plane drag edges between them with ease.
 
 ![viewport example](https://raw.githubusercontent.com/mvarble/viewport-planar-graph/master/example.gif)
 
-# API
+## API
 
-## PlanarGraph
+### PlanarGraph
 
 ```js
 sink = PlanarGraph({ state, frameState, addNode, removeNode })
 ```
 
-### Manages a State
+#### Manages a State
 
 This is a component that is responsible for maintaining a state of the form:
 ```js
@@ -53,19 +53,21 @@ Each element of `graphFrame.data.edges` has `head` and `tail` keys, which corres
 The component is designed to manage this state by taking streams of clicks from a [viewport.js](https://github.com/mvarble/viewport.js) `ViewportDriver`.
 The state this component manages can then be embedded into the state of a `Viewport` component and be rendered accordingly.
 
-### Signature
+#### Signature
 
 The sources are:
-  - frameSource: a `FrameSource` instance with mounted `DOMSource`, as outputted by the `ViewportDriver`; see [more here](https://github.com/mvarble/viewport.js#viewportdriver).
-  - state: the state source as provided by `withState`; see more [here](https://cycle.js.org/api/state.html#cycle-state-source).
-  - addNode: a stream of objects of the form `{ location: [x, y], data: {...} }`, as one would see in an element of `graphFrame.data.graph.nodes`.
-  - removeNode: a stream of keys corresponding to that belonging to the node we would like to remove.
+
+  - `frameSource`: a `FrameSource` instance with mounted `DOMSource`, as outputted by the `ViewportDriver`; see [more here](https://github.com/mvarble/viewport.js#viewportdriver).
+  - `state`: the state source as provided by `withState`; see more [here](https://cycle.js.org/api/state.html#cycle-state-source).
+  - `addNode`: a stream of objects of the form `{ location: [x, y], data: {...} }`, as one would see in an element of `graphFrame.data.graph.nodes`.
+  - `removeNode`: a stream of keys corresponding to that belonging to the node we would like to remove.
 
 The sinks are:
-  - state: a stream of reducers.
-  - messages: a stream of logs for the intent of the graph.
 
-## renderGraph
+  - `state`: a stream of reducers.
+  - `messages`: a stream of logs for the intent of the graph.
+
+### renderGraph
 
 ```js
 renderGraph(context, graphFrame, options)
@@ -74,11 +76,11 @@ renderGraph(context, graphFrame, options)
 This is an imperative function that is intended to be called within the `render` function of a `Viewport` component; see [more here](https://github.com/mvarble/viewport.js#viewport).
 The `context` is the canvas context we are using to render, the `graphFrame` is the state of the planar graph, and `options` is an (optional) object with attributes:
 
-  - activeBorder: the color of the border of a node that is *active*,
-  - selectedBorder: the color of the border of a node that is *selected*,
-  - deselectedBorder: the color of the border of a node that is neither of the above.
-  - fillStyle: the fill of a node.
-  - inFillStyle: the fill of the little box that *takes in* edges.
-  - outFillStyle: the fill of the little box that *gives out* edges.
-  - toColor: the color of an edge that is not connected to anything (when dragging)
-  - tailColor: the color of an edge that is connected to another node.
+  - `activeBorder`: the color of the border of a node that is *active*,
+  - `selectedBorder`: the color of the border of a node that is *selected*,
+  - `deselectedBorder`: the color of the border of a node that is neither of the above.
+  - `fillStyle`: the fill of a node.
+  - `inFillStyle`: the fill of the little box that *takes in* edges.
+  - `outFillStyle`: the fill of the little box that *gives out* edges.
+  - `toColor`: the color of an edge that is not connected to anything (when dragging)
+  - `tailColor`: the color of an edge that is connected to another node.

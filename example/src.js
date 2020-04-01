@@ -4,17 +4,21 @@ const { run } = require('@cycle/run');
 const { withState } = require('@cycle/state');
 const { makeDOMDriver, h } = require('@cycle/dom');
 const { Viewport, ViewportDriver } = require('@mvarble/viewport.js');
+const { withWindow, parentDims, putInWindow } = require('@mvarble/viewport-utilities');
 const { PlanarGraph, renderGraph, castGraphFrame } = require('../index');
 const GIFEncoder = require('gifencoder');
 
 const initial = { worldMatrix: [[0, -35, 600], [35, 0, 200], [0, 0, 1]] };
 
 const render = (canvas, graphFrame) => {
+  const { width, height } = graphFrame;
+  canvas.width = width;
+  canvas.height = height;
   const context = canvas.getContext('2d');
-  context.clearRect(0, 0, 1200, 400);
+  context.clearRect(0, 0, width, height);
   context.fillStyle = 'gray';
-  context.fillRect(0, 0, 1200, 400);
-  renderGraph(context, graphFrame);
+  context.fillRect(0, 0, width, height);
+  renderGraph(context, graphFrame.children[1]);
 }
 
 function app({ state, DOM, viewport }) {
@@ -22,20 +26,24 @@ function app({ state, DOM, viewport }) {
   const frameSource = viewport.mount(DOM.select('canvas'));
   const add$ = DOM.select('button.add').events('click');
   const delete$ = DOM.select('button.delete').events('click');
+  const dims$ = DOM.select('canvas').element().compose(parentDims);
 
   // model
   const addNode$ = add$.mapTo(undefined);
   const removeNode$ = delete$.compose(sampleCombine(state.stream))
-    .filter(([_, frame]) => frame && frame.children && frame.children.length)
-    .map(([_, state]) => state.children.filter(n => n.data && n.data.selected)) 
+    .filter(([_, frame]) => frame && frame.children && frame.children[1])
+    .map(([_, frame]) => frame.children[1])
+    .filter(frame => frame.children && frame.children.length)
+    .map(frame => frame.children.filter(n => n.data && n.data.selected)) 
     .filter(nodes => nodes.length)
     .map(nodes => xs.fromArray(nodes.map(node => node.key)))
-    .flatten();
-  const graphSink = PlanarGraph({
+    .flatten().debug();
+  const graphSink = withWindow(PlanarGraph)({
     frameSource,
     state,
     addNode: addNode$,
     removeNode: removeNode$,
+    dimensions: dims$,
   });
 
   // view
@@ -50,14 +58,26 @@ function app({ state, DOM, viewport }) {
     parseDeep: xs.of(true),
   });
   const dom$ = xs.combine(state.stream, viewportSink.DOM)
-    .map(([graphFrame, canvas]) => h('div', [
-      canvas,
-      h('button.add', ['Add']),
-      h('button.delete', ['Delete']),
-    ]));
+    .map(([graphFrame, canvas]) => h(
+      'div',
+      { style: { width: '100vw', height: '100vh' } },
+      [
+        canvas,
+        h(
+          'button.add',
+          { style: { position: 'fixed', display: 'block', bottom: '25px', right: 0 } },
+          ['Add']
+        ),
+        h(
+          'button.delete',
+          { style: { position: 'fixed', display: 'block', bottom: '0px', right: 0 } },
+          ['Delete']
+        ),
+      ],
+    ));
 
   return {
-    state: graphSink.state.startWith(() => castGraphFrame(initial)),
+    state: graphSink.state.startWith(() => putInWindow(castGraphFrame(initial), 1200, 400)),
     DOM: dom$,
     viewport: viewportSink.viewport,
     gif: DOM.select('canvas').element().take(1),
@@ -67,7 +87,7 @@ function app({ state, DOM, viewport }) {
 run(withState(app), {
   DOM: makeDOMDriver('#app'),
   viewport: ViewportDriver,
-  gif: makeGifRecorder(),
+  //gif: makeGifRecorder(),
 });
 
 function makeGifRecorder() {

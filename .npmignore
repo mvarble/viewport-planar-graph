@@ -1,4 +1,5 @@
 build.js
 src
-test
+example
+example.gif
 .babelrc
