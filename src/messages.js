@@ -6,7 +6,8 @@
  */
 
 // module dependencies: npm packages
-import { getOver, relativeMousePosition } from '@mvarble/viewport.js';
+import { getOver } from '@mvarble/viewport.js';
+import { relativeMousePosition } from '@mvarble/viewport-utilities';
 
 // our export
 export {
