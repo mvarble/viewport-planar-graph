@@ -84,6 +84,7 @@ function PlanarGraph(sources) {
   return {
     state: xs.merge(graph.state, frames.state, addNode$),
     messages: messages$,
+    debug: state.stream,
   };
 }
 

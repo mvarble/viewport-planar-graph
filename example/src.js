@@ -37,7 +37,7 @@ function app({ state, DOM, viewport }) {
     .map(frame => frame.children.filter(n => n.data && n.data.selected)) 
     .filter(nodes => nodes.length)
     .map(nodes => xs.fromArray(nodes.map(node => node.key)))
-    .flatten().debug();
+    .flatten();
   const graphSink = withWindow(PlanarGraph)({
     frameSource,
     state,
@@ -81,6 +81,7 @@ function app({ state, DOM, viewport }) {
     DOM: dom$,
     viewport: viewportSink.viewport,
     gif: DOM.select('canvas').element().take(1),
+    debug: l$ => l$.addListener({ next: console.log }),
   };
 }
 
